@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14.1-alpine
+    container_name: postgres
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+
+  web:
+    image: realm74/axon
+    container_name: web
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    command:
+      sh -c "alembic upgrade head &&
+      gunicorn app.main:app --workers 1
+      --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+
+volumes:
+  data:
