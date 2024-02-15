@@ -37,12 +37,11 @@ class AbstractRepository(ABC):
 class TaskRepository(AbstractRepository):
     @staticmethod
     def query_one_task(task_id):
-        query = (
+        return (
             select(TaskTable).filter(
                 TaskTable.id == task_id
             ).options(selectinload(TaskTable.products))
         )
-        return query
 
     async def get_task(self, task_id: int):
         async with async_session_maker() as session:
@@ -64,13 +63,12 @@ class TaskRepository(AbstractRepository):
             query_sort = product_filter.sort(query)
             result = await session.execute(query_sort)
             filtered_data = result.scalars().all()
-            response = {
+            return {
                 'data': filtered_data[offset_min:offset_max],
                 "page": page,
                 "size": size,
                 "total": math.ceil(len(filtered_data) / size) - 1
             }
-            return response
 
     async def add_task(self, new_tasks: List[ShiftTask]):
         async with async_session_maker() as session:
