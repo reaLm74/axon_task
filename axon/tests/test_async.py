@@ -6,7 +6,7 @@ from tests.data import data, update, data_product, aggregate
 @pytest.mark.anyio
 async def test_tasks(client: AsyncClient):
     response = await client.get(
-        "/tasks?status_closed=false&order_by=batch_number"
+        "/tasks?page=0&size=2&status_closed=false&order_by=batch_number"
     )
     assert response.status_code == 200
 
