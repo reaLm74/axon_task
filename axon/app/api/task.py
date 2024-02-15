@@ -1,12 +1,13 @@
 from typing import List
 
 from fastapi import APIRouter, HTTPException
+from fastapi import Query
 from fastapi import status
 from fastapi_filter import FilterDepends
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.filter.tasks import TaskFilter
-from app.schemas.tasks import ShiftTask, ReadTask
+from app.schemas.tasks import ShiftTask, ReadTask, FilterTask
 from app.services.tasks import TaskRepository
 from app.utils.exception import TaskNotFound
 
@@ -34,10 +35,14 @@ async def get_task(task_id: int):
         )
 
 
-@router.get("", status_code=status.HTTP_200_OK, response_model=List[ReadTask])
-async def filter_task(product_filter: TaskFilter = FilterDepends(TaskFilter)):
+@router.get("", status_code=status.HTTP_200_OK, response_model=FilterTask)
+async def filter_task(
+        product_filter: TaskFilter = FilterDepends(TaskFilter),
+        page: int = Query(ge=0, default=0),
+        size: int = Query(ge=1, le=100)
+):
     try:
-        return await TaskRepository().filter_task(product_filter)
+        return await TaskRepository().filter_task(page, size, product_filter)
     except SQLAlchemyError:
         raise SQLAlchemyError(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -72,4 +77,3 @@ async def update_task(task_id: int, update: ShiftTask):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Bad request (update task)'
         )
-

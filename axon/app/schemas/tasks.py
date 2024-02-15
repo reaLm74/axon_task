@@ -48,3 +48,10 @@ class ReadTask(BaseModel):
     shift_end_time: datetime
     closed_at: Optional[datetime]
     products: List[ReadProduct]
+
+
+class FilterTask(BaseModel):
+    data: List[ReadTask]
+    page: int
+    size: int
+    total: int

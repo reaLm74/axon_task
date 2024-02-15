@@ -1,3 +1,4 @@
+import math
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List
@@ -21,7 +22,8 @@ class AbstractRepository(ABC):
 
     @abstractmethod
     async def filter_task(
-            self, product_filter: TaskFilter = FilterDepends(TaskFilter)
+            self, page, size,
+            product_filter: TaskFilter = FilterDepends(TaskFilter)
     ):
         raise NotImplementedError
 
@@ -38,9 +40,9 @@ class TaskRepository(AbstractRepository):
     @staticmethod
     def query_one_task(task_id):
         query = (
-            select(TaskTable)
-            .filter(TaskTable.id == task_id)
-            .options(selectinload(TaskTable.products))
+            select(TaskTable).filter(
+                TaskTable.id == task_id
+            ).options(selectinload(TaskTable.products))
         )
         return query
 
@@ -52,15 +54,25 @@ class TaskRepository(AbstractRepository):
             return task
 
     async def filter_task(
-            self, product_filter: TaskFilter = FilterDepends(TaskFilter)
+            self, page, size,
+            product_filter: TaskFilter = FilterDepends(TaskFilter)
     ):
+        offset_min = page * size
+        offset_max = (page + 1) * size
         async with async_session_maker() as session:
             query = product_filter.filter(
                 select(TaskTable).options(selectinload(TaskTable.products))
             )
             query_sort = product_filter.sort(query)
             result = await session.execute(query_sort)
-            return result.scalars().all()
+            filtered_data = result.scalars().all()
+            response = {
+                'data': filtered_data[offset_min:offset_max],
+                "page": page,
+                "size": size,
+                "total": math.ceil(len(filtered_data) / size) - 1
+            }
+            return response
 
     async def add_task(self, new_tasks: List[ShiftTask]):
         async with async_session_maker() as session:
