@@ -1,5 +1,16 @@
 # Axon tasks
 
+
+## Технологии
+
+- Python
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+
+
+<details> 
+<summary> Поставленная задача </summary>
 # Тестовое задание на позицию junior backend разработчика
 
 Вам необходимо разработать систему **контроля заданий на выпуск продукции**.
@@ -164,3 +175,283 @@
 1. Добавить проверку кода линтерами (mypy, flake8) и форматтерами (black, isort). Вместо flake8, isort и black можно использовать ruff.
 2. Добавить запуск тестов (если есть).
 3. Добавить сборку проекта в docker образ и отправку этого образа в docker hub или github container registry.
+</details>
+
+
+## Как запустить проект:
+
+### Клонирование репозитория:
+
+```sh
+git clone https://github.com/realm74/axon_task
+```
+
+<details> <summary> Шаблон наполнения .env </summary>
+
+```
+Example of filling a file .env:
+
+DRIVER='postgresql+asyncpg'
+USER='postgres'
+PASSWORD='postgres'
+HOST='localhost'
+PORT='5432'
+DB_NAME='postgres'
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=postgres
+```
+
+</details>
+
+### Запуск приложения в Docker
+
+Собрать контейнер
+
+```
+docker-compose build
+```
+
+Запустить docker-compose.yaml
+
+```
+docker-compose up
+```
+
+Проект запущен
+
+```
+http://127.0.0.1:8000/docs
+```
+
+Удалить контейнеры
+
+```
+docker-compose down
+```
+
+## Эндпойнты
+
+<details> 
+<summary> Подробнее </summary>
+
+### Эндпойнт добавления сменных заданий: 
+
+```python 
+POST http://127.0.0.1:8000/tasks/add
+```
+
+```
+[
+  {
+    "СтатусЗакрытия": true,
+    "ПредставлениеЗаданияНаСмену": "string",
+    "Линия": "string",
+    "Смена": "string",
+    "Бригада": "string",
+    "НомерПартии": 0,
+    "ДатаПартии": "2024-02-15",
+    "Номенклатура": "string",
+    "КодЕКН": "string",
+    "ИдентификаторРЦ": "string",
+    "ДатаВремяНачалаСмены": "2024-02-15T06:52:01.768Z",
+    "ДатаВремяОкончанияСмены": "2024-02-15T06:52:01.768Z"
+  }
+]
+```
+
+Ответ:
+
+
+###  Эндпойнт получения сменного задания по ID:
+
+```python 
+GET http://127.0.0.1:8000/tasks/{id}
+```
+
+Ответ:
+
+```
+{
+  "id": 1,
+  "status_closed": false,
+  "shift_task_representation": "Задание на тестовую смену 10817446",
+  "line": "Линия 10817446",
+  "shift": "Смена 10817446",
+  "brigade": "Бригада 10817446",
+  "batch_number": 24472756,
+  "batch_date": "2024-02-15",
+  "nomenclature": "№ 10817446",
+  "code_ekn": "654651",
+  "identifier_rc": "6553661",
+  "shift_start_time": "2024-02-15T15:00:00Z",
+  "shift_end_time": "2024-02-15T03:00:00Z",
+  "closed_at": null,
+  "products": [
+    {
+      "id": 1,
+      "product_code": "string",
+      "is_aggregated": false,
+      "aggregated_at": null,
+      "task_id": 1
+    }
+  ]
+}
+```
+
+###  Эндпойнт изменения сменного задания по ID:
+
+```python 
+PATCH http://127.0.0.1:8000/tasks/{id}
+```
+
+```
+{
+  "СтатусЗакрытия": true,
+  "ПредставлениеЗаданияНаСмену": "string",
+  "Линия": "string",
+  "Смена": "string",
+  "Бригада": "string",
+  "Номенклатура": "string",
+  "КодЕКН": "string",
+  "ИдентификаторРЦ": "string",
+  "ДатаВремяНачалаСмены": "2024-02-15T06:52:37.241Z",
+  "ДатаВремяОкончанияСмены": "2024-02-15T06:52:37.241Z"
+}
+```
+
+Ответ:
+
+```
+{
+  "id": 2,
+  "status_closed": true,
+  "shift_task_representation": "string",
+  "line": "string",
+  "shift": "string",
+  "brigade": "string",
+  "batch_number": 34960791,
+  "batch_date": "2024-02-15",
+  "nomenclature": "string",
+  "code_ekn": "string",
+  "identifier_rc": "string",
+  "shift_start_time": "2024-02-15T06:56:08.237000Z",
+  "shift_end_time": "2024-02-15T06:56:08.237000Z",
+  "closed_at": "2024-02-15T06:57:08.211670",
+  "products": []
+}
+```
+
+###  Эндпойнт получения списка сменных заданий по фильтрам:
+
+```python 
+GET http://127.0.0.1:8000/tasks?page=0&size=3&order_by=batch_number
+```
+
+Ответ:
+```{
+  "data": [
+    {
+      "id": 5,
+      "status_closed": false,
+      "shift_task_representation": "Задание на тестовую смену 10817446",
+      "line": "Линия 10817446",
+      "shift": "Смена 10817446",
+      "brigade": "Бригада 10817446",
+      "batch_number": 10817446,
+      "batch_date": "2024-02-15",
+      "nomenclature": "№ 10817446",
+      "code_ekn": "654651",
+      "identifier_rc": "6553661",
+      "shift_start_time": "2024-02-15T15:00:00Z",
+      "shift_end_time": "2024-02-15T03:00:00Z",
+      "closed_at": null,
+      "products": []
+    },
+    {
+      "id": 1,
+      "status_closed": false,
+      "shift_task_representation": "Задание на тестовую смену 10817446",
+      "line": "Линия 10817446",
+      "shift": "Смена 10817446",
+      "brigade": "Бригада 10817446",
+      "batch_number": 24472756,
+      "batch_date": "2024-02-15",
+      "nomenclature": "№ 10817446",
+      "code_ekn": "654651",
+      "identifier_rc": "6553661",
+      "shift_start_time": "2024-02-15T15:00:00Z",
+      "shift_end_time": "2024-02-15T03:00:00Z",
+      "closed_at": null,
+      "products": [
+        {
+          "id": 1,
+          "product_code": "string",
+          "is_aggregated": false,
+          "aggregated_at": null,
+          "task_id": 1
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "status_closed": false,
+      "shift_task_representation": "Задание на тестовую смену 32067607",
+      "line": "Линия 32067607",
+      "shift": "Смена 32067607",
+      "brigade": "Бригада 32067607",
+      "batch_number": 32067607,
+      "batch_date": "2024-02-15",
+      "nomenclature": "№ 32067607",
+      "code_ekn": "654651",
+      "identifier_rc": "6553661",
+      "shift_start_time": "2024-02-15T15:00:00Z",
+      "shift_end_time": "2024-02-15T03:00:00Z",
+      "closed_at": null,
+      "products": []
+    }
+  ],
+  "page": 0,
+  "size": 3,
+  "total": 1
+}
+```
+
+###  Эндпойнт добавления продукта: 
+
+```python 
+POST http://127.0.0.1:8000/products/add
+```
+
+```
+[
+  {
+    "УникальныйКодПродукта": "string",
+    "НомерПартии": 0,
+    "ДатаПартии": "2024-02-15"
+  }
+]
+```
+
+###  Эндпойнт "аггрегации" продукции:
+
+```python 
+POST http://127.0.0.1:8000/products/aggregate
+```
+
+```
+{
+  "task_id": 4,
+  "product_code": "tg23g3geg"
+}
+```
+
+Ответ:
+
+```
+{
+  "detail": "tg23g3geg"
+}
+```
+</details>
