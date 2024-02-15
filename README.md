@@ -455,3 +455,18 @@ POST http://127.0.0.1:8000/products/aggregate
 }
 ```
 </details>
+
+
+## Тестирование
+
+<details> 
+<summary> Подробнее </summary>
+
+
+
+```
+pytest tests
+```
+
+
+</details>
