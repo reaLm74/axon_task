@@ -16,15 +16,20 @@ router = APIRouter(
 )
 
 
-@router.post("/add", status_code=status.HTTP_200_OK)
+@router.post("/add", status_code=status.HTTP_201_CREATED)
 async def add_product(new_products: List[Product]):
     try:
         await ProductRepository().add_product(new_products)
-    except SQLAlchemyError as error:
-        raise SQLAlchemyError(f'Error in "add_product": {error}')
+    except SQLAlchemyError:
+        raise SQLAlchemyError(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Bad request (add product)'
+        )
 
 
-@router.patch("/aggregate", status_code=status.HTTP_200_OK, response_model=dict)
+@router.patch(
+    "/aggregate", status_code=status.HTTP_201_CREATED, response_model=dict
+)
 async def aggregate_product(aggregation: Aggregation):
     try:
         return await ProductRepository().aggregate_product(aggregation)
@@ -53,5 +58,8 @@ async def aggregate_product(aggregation: Aggregation):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Batch is closed",
         )
-    except SQLAlchemyError as error:
-        return SQLAlchemyError(f'Error in "aggregate_product": {error}')
+    except SQLAlchemyError:
+        raise SQLAlchemyError(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Bad request (aggregate product)'
+        )

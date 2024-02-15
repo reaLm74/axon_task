@@ -27,24 +27,33 @@ async def get_task(task_id: int):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Task not found"
         )
-    except SQLAlchemyError as error:
-        raise SQLAlchemyError(f'Error in "get_task": {error}')
+    except SQLAlchemyError:
+        raise SQLAlchemyError(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Bad request (get task)'
+        )
 
 
 @router.get("", status_code=status.HTTP_200_OK, response_model=List[ReadTask])
 async def filter_task(product_filter: TaskFilter = FilterDepends(TaskFilter)):
     try:
         return await TaskRepository().filter_task(product_filter)
-    except SQLAlchemyError as error:
-        raise SQLAlchemyError(f'Error in "filter_task": {error}')
+    except SQLAlchemyError:
+        raise SQLAlchemyError(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Bad request (filter task)'
+        )
 
 
 @router.post("/add", status_code=status.HTTP_201_CREATED)
 async def add_task(new_tasks: List[ShiftTask]):
     try:
         await TaskRepository().add_task(new_tasks)
-    except SQLAlchemyError as error:
-        raise SQLAlchemyError(f'Error in "add_task": {error}')
+    except SQLAlchemyError:
+        raise SQLAlchemyError(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Bad request (add task)'
+        )
 
 
 @router.patch(
@@ -58,5 +67,9 @@ async def update_task(task_id: int, update: ShiftTask):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Task not found"
         )
-    except SQLAlchemyError as error:
-        raise SQLAlchemyError(f'Error in "update_task": {error}')
+    except SQLAlchemyError:
+        raise SQLAlchemyError(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Bad request (update task)'
+        )
+
