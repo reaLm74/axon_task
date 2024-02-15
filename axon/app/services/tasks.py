@@ -3,16 +3,14 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List
 
-from fastapi_filter import FilterDepends
-from sqlalchemy import and_
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-
 from app.db.db import async_session_maker
 from app.filter.tasks import TaskFilter
 from app.models.tasks import TaskTable
 from app.schemas.tasks import ShiftTask
 from app.utils.exception import TaskNotFound
+from fastapi_filter import FilterDepends
+from sqlalchemy import and_, select
+from sqlalchemy.orm import selectinload
 
 
 class AbstractRepository(ABC):

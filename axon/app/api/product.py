@@ -1,14 +1,12 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException
-from fastapi import status
-from sqlalchemy.exc import SQLAlchemyError
-
 from app.schemas.aggregate import Aggregation
 from app.schemas.products import Product
 from app.services.products import ProductRepository
-from app.utils.exception import (ProductNotExist, ErrorCodeAttached, BatchNone,
-                                 ErrorCodeUsed, BatchClosed)
+from app.utils.exception import (BatchClosed, BatchNone, ErrorCodeAttached,
+                                 ErrorCodeUsed, ProductNotExist)
+from fastapi import APIRouter, HTTPException, status
+from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter(
     prefix="/products",

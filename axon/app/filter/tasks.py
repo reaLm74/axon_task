@@ -1,10 +1,8 @@
 from datetime import date
-from typing import List
-from typing import Optional
-
-from fastapi_filter.contrib.sqlalchemy import Filter
+from typing import List, Optional
 
 from app.models.tasks import TaskTable
+from fastapi_filter.contrib.sqlalchemy import Filter
 
 
 class TaskFilter(Filter):

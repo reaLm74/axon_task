@@ -1,10 +1,8 @@
-from datetime import datetime, date
-from typing import List
-from typing import Optional
-
-from pydantic import BaseModel, Field
+from datetime import date, datetime
+from typing import List, Optional
 
 from app.schemas.products import ReadProduct
+from pydantic import BaseModel, Field
 
 
 class ShiftTask(BaseModel):

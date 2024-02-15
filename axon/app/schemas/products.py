@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
 from datetime import date, datetime
 from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
 class Product(BaseModel):

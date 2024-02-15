@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient
-from tests.data import data, update, data_product, aggregate
+from tests.data import aggregate, data, data_product, update
 
 
 @pytest.mark.anyio

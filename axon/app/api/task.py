@@ -1,15 +1,12 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException
-from fastapi import Query
-from fastapi import status
-from fastapi_filter import FilterDepends
-from sqlalchemy.exc import SQLAlchemyError
-
 from app.filter.tasks import TaskFilter
-from app.schemas.tasks import ShiftTask, ReadTask, FilterTask
+from app.schemas.tasks import FilterTask, ReadTask, ShiftTask
 from app.services.tasks import TaskRepository
 from app.utils.exception import TaskNotFound
+from fastapi import APIRouter, HTTPException, Query, status
+from fastapi_filter import FilterDepends
+from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter(
     prefix="/tasks",

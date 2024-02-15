@@ -1,8 +1,7 @@
-from sqlalchemy import (Column, Integer, String,
-                        DateTime, Boolean, Date, UniqueConstraint)
-from sqlalchemy.orm import relationship
-
 from app.db.db import Base
+from sqlalchemy import (Boolean, Column, Date, DateTime, Integer, String,
+                        UniqueConstraint)
+from sqlalchemy.orm import relationship
 
 
 class TaskTable(Base):

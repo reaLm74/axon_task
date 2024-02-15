@@ -1,7 +1,6 @@
 import uvicorn
-from fastapi import FastAPI
-
 from app.api.routers import all_routers
+from fastapi import FastAPI
 
 app = FastAPI(title='axon')
 

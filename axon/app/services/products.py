@@ -2,16 +2,14 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import and_
-from sqlalchemy import select
-
 from app.db.db import async_session_maker
 from app.models.products import ProductTable
 from app.models.tasks import TaskTable
 from app.schemas.aggregate import Aggregation
 from app.schemas.products import Product
-from app.utils.exception import (ProductNotExist, ErrorCodeAttached, BatchNone,
-                                 ErrorCodeUsed, BatchClosed)
+from app.utils.exception import (BatchClosed, BatchNone, ErrorCodeAttached,
+                                 ErrorCodeUsed, ProductNotExist)
+from sqlalchemy import and_, select
 
 
 class AbstractRepository(ABC):
