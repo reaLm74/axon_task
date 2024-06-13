@@ -1,12 +1,12 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:14.1-alpine
     container_name: postgres
     restart: always
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
       - data:/var/lib/postgresql/data
     ports:
@@ -14,7 +14,7 @@ services:
 
 
   web:
-    image: realm74/axon
+    build: .
     container_name: web
     restart: always
     env_file:
@@ -23,10 +23,24 @@ services:
       - postgres
     command:
       sh -c "alembic upgrade head &&
-      gunicorn app.main:app --workers 1
-      --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
+      $OTEL == 'true' &&
+      exec opentelemetry-instrument uvicorn
+      shared_kernel.infra.fastapi.main:app --host=0.0.0.0 --port=8000
+      ||
+      exec uvicorn
+      shared_kernel.infra.fastapi.main:app --host=0.0.0.0 --port=8000"
+
     ports:
       - "8000:8000"
+    environment:
+      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+      - OTEL_SERVICE_NAME=aggregate
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://collector:4317
+      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://collector:4317
+      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://collector:4317
 
 volumes:
   data:

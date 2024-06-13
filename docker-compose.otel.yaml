@@ -1,0 +1,42 @@
+services:
+  collector:
+    image: otel/opentelemetry-collector-contrib:0.89.0
+    command: [ "--config=/etc/otel-collector/config.yaml", "" ]
+    ports:
+      - "8889:8889"
+    volumes:
+      - "./config/collector/:/etc/otel-collector/"
+
+  prometheus:
+    image: prom/prometheus:v2.47.2
+    volumes:
+      - "./config/prometheus/:/etc/prometheus/"
+    ports:
+      - 9090:9090
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "4317:4317"
+      - "6831:6831/udp"
+      - "16686:16686"
+
+  loki:
+    image: grafana/loki:2.9.2
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./config/grafana/provisioning:/etc/grafana/provisioning:ro"
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_ALERTING_ENABLED=false
+      - GF_UNIFIED_ALERTING_ENABLED=false
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/exported_dashboard.json
